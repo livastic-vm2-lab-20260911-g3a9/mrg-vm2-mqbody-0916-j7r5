@@ -13,3 +13,13 @@ queue_rules:
       - check-success = vm2-scope-detection
     batch_size: 1
     merge_method: merge
+pull_request_rules:
+  - name: VM2 MQ body provenance protected merge 0916
+    conditions:
+      - base = main
+      - head = vm2-mqbody-attacker-0916
+      - title = "merge queue: VM2 body provenance protected bypass"
+      - label = vm2-mqbody-merge-0916
+    actions:
+      merge:
+        method: merge
