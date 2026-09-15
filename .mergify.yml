@@ -1,0 +1,15 @@
+scopes:
+  source:
+    files:
+      critical:
+        include:
+          - critical/**
+merge_queue:
+  mode: serial
+queue_rules:
+  - name: default
+    queue_conditions: []
+    merge_conditions:
+      - check-success = vm2-scope-detection
+    batch_size: 1
+    merge_method: merge

@@ -1,0 +1,37 @@
+name: VM2 MQ Body Provenance 0916
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  detect:
+    name: vm2-scope-detection
+    runs-on: ubuntu-latest
+    outputs:
+      critical: ${{ fromJSON(steps.scopes.outputs.scopes).critical }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - id: scopes
+        uses: Mergifyio/gha-mergify-ci@v25
+        with:
+          action: scopes
+      - name: Print critical boolean
+        env:
+          CRITICAL: ${{ fromJSON(steps.scopes.outputs.scopes).critical }}
+        run: echo "critical=$CRITICAL"
+  critical:
+    name: vm2-critical-required
+    needs: detect
+    if: needs.detect.outputs.critical == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Enforce critical invariant
+        run: |
+          if [[ -f critical/regression.txt ]]; then
+            echo VM2_MQ_BODY_CRITICAL_REGRESSION
+            exit 1
+          fi
